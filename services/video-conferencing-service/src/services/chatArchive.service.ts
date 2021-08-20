@@ -9,7 +9,7 @@ import {
   AzureTargetOptions, S3TargetOptions, VideoChatInterface
 } from '../types';
 
-export class ChatArchiveSession{
+export class ChatArchiveService{
 
    constructor(
     @inject(VideoChatBindings.VideoChatProvider)
@@ -43,6 +43,7 @@ export class ChatArchiveSession{
   async getArchives() {
     return this.videoChatProvider.getArchives(null);
   }
+
 
   async deleteArchive(
     @param.path.string('archiveId') archiveId: string,

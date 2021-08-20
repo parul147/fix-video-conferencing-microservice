@@ -1,6 +1,4 @@
-import {inject} from '@loopback/context';
 import {service} from '@loopback/core';
-import {repository} from '@loopback/repository';
 import {
   get,
   getModelSchemaRef, param,
@@ -15,31 +13,16 @@ import {
 import {authenticate, STRATEGY} from 'loopback4-authentication';
 import {authorize} from 'loopback4-authorization';
 import {PermissionKeys} from '../enums/permission-keys.enum';
-import {VideoChatBindings} from '../keys';
 import {SessionAttendees, VideoChatSession} from '../models';
-import {VonageConfig, VonageSessionWebhookPayload} from '../providers/vonage';
-import {VonageBindings} from '../providers/vonage/keys';
-import {
-  AuditLogsRepository, SessionAttendeesRepository, VideoChatSessionRepository
-} from '../repositories';
+import {VonageSessionWebhookPayload} from '../providers/vonage';
 import {ChatSessionService} from '../services/chatSession.service';
 import {
   MeetingOptions,
-  SessionOptions, SessionResponse, VideoChatInterface
+  SessionOptions, SessionResponse
 } from '../types';
 export class VideoChatSessionController {
   constructor(
-    @repository(VideoChatSessionRepository)
-    private readonly videoChatSessionRepository: VideoChatSessionRepository,
-    @inject(VideoChatBindings.VideoChatProvider)
-    private readonly videoChatProvider: VideoChatInterface,
-    @repository(AuditLogsRepository)
-    private readonly auditLogRepository: AuditLogsRepository,
-    @repository(SessionAttendeesRepository)
-    private readonly sessionAttendeesRepository: SessionAttendeesRepository,
-    @inject(VonageBindings.config, {optional: true})
-    private readonly config: VonageConfig,
-     @service(ChatSessionService) public chatSessionService: ChatSessionService
+ @service(ChatSessionService) public chatSessionService: ChatSessionService
   ) {}
 
   @authenticate(STRATEGY.BEARER)

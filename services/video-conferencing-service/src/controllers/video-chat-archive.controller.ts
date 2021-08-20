@@ -1,5 +1,4 @@
-import {inject, service} from '@loopback/core';
-import {repository} from '@loopback/repository';
+import {service} from '@loopback/core';
 import {del, get, param, put, requestBody} from '@loopback/rest';
 import {
   CONTENT_TYPE,
@@ -8,24 +7,15 @@ import {
 import {authenticate, STRATEGY} from 'loopback4-authentication';
 import {authorize} from 'loopback4-authorization';
 import {PermissionKeys} from '../enums/permission-keys.enum';
-import {VideoChatBindings} from '../keys';
-import {AuditLogsRepository, VideoChatSessionRepository} from '../repositories';
-import {ChatArchiveSession} from '../services/chatArchive.service';
-import {ChatSessionService} from '../services/chatSession.service';
+import {ChatArchiveService} from '../services/chatArchive.service';
 import {
-  AzureTargetOptions, S3TargetOptions, VideoChatInterface
+  AzureTargetOptions, S3TargetOptions
 } from '../types';
+
 
 export class VideoChatArchiveController {
   constructor(
-    @inject(VideoChatBindings.VideoChatProvider)
-    private readonly videoChatProvider: VideoChatInterface,
-    @repository(VideoChatSessionRepository)
-    private readonly videoChatSessionRepository: VideoChatSessionRepository,
-    @repository(AuditLogsRepository)
-    private readonly auditLogRepository: AuditLogsRepository,
-
-   @service(ChatSessionService) public chatArchiveSession: ChatArchiveSession
+ @service(ChatArchiveService) public chatArchiveService: ChatArchiveService
   ) { }
 
   @authenticate(STRATEGY.BEARER)
@@ -47,7 +37,7 @@ export class VideoChatArchiveController {
     },
   })
   async getArchive(@param.path.string('archiveId') archiveId: string) {
-    return await this.chatArchiveSession.getArchive(archiveId);
+    return await this.chatArchiveService.getArchive(archiveId);
   }
 
   @authenticate(STRATEGY.BEARER)
@@ -68,9 +58,6 @@ export class VideoChatArchiveController {
       },
     },
   })
-  async getArchives() {
-    return this.videoChatProvider.getArchives(null);
-  }
 
   @authenticate(STRATEGY.BEARER)
   @authorize({permissions: [PermissionKeys.DeleteArchive]})
@@ -93,7 +80,7 @@ export class VideoChatArchiveController {
   async deleteArchive(
     @param.path.string('archiveId') archiveId: string,
   ): Promise<void> {
-    return await this.chatArchiveSession.deleteArchive(archiveId);
+    return await this.chatArchiveService.deleteArchive(archiveId);
   }
 
   @authenticate(STRATEGY.BEARER)
@@ -117,7 +104,7 @@ export class VideoChatArchiveController {
   async setUploadTarget(
     @requestBody() body: S3TargetOptions | AzureTargetOptions,
   ): Promise<void> {
-    return await this.chatArchiveSession.setUploadTarget(body);
+    return await this.chatArchiveService.setUploadTarget(body);
   }
 
 }
